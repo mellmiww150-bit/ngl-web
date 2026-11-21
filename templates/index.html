@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJ3CTX SPAM NGL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-0: #05060a;
+            --bg-1: #0a0d16;
+            --bg-2: #10141f;
+            --glass: rgba(18, 22, 34, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent: #00e5ff;
+            --accent-2: #7b2fff;
+            --accent-3: #ff2d78;
+            --ok: #4ade80;
+            --warn: #ffb35c;
+            --bad: #ff5c5c;
+            --text: #eef1f8;
+            --muted: #7a8296;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg-0);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 44px 44px;
+            pointer-events: none;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+        }
+
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            pointer-events: none;
+            animation: float 12s ease-in-out infinite;
+        }
+        .bg-orb.o1 {
+            width: 480px; height: 480px;
+            background: rgba(0, 229, 255, 0.16);
+            top: -120px; left: -100px;
+        }
+        .bg-orb.o2 {
+            width: 520px; height: 520px;
+            background: rgba(123, 47, 255, 0.16);
+            bottom: -160px; right: -120px;
+            animation-delay: -6s;
+        }
+        .bg-orb.o3 {
+            width: 300px; height: 300px;
+            background: rgba(255, 45, 120, 0.1);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -3s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(40px) scale(1.08); }
+        }
+
+        .card {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 620px;
+            background: linear-gradient(145deg, rgba(20, 24, 38, 0.9), rgba(10, 13, 22, 0.95));
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 36px;
+            box-shadow:
+                0 40px 100px rgba(0, 0, 0, 0.7),
+                0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+                0 30px 60px rgba(0, 229, 255, 0.06);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.07), transparent 28%);
+            pointer-events: none;
+        }
+
+        .brand { text-align: center; margin-bottom: 28px; }
+        .brand .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 34px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(120deg, var(--accent), var(--accent-2), var(--accent-3));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 6px 20px rgba(0, 229, 255, 0.25));
+        }
+        .brand .tagline {
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        .field { margin-bottom: 20px; }
+        .field label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+        .field label .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        input, textarea {
+            width: 100%;
+            background: rgba(8, 10, 16, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            resize: vertical;
+            transition: all 0.25s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3) inset;
+        }
+        input:hover, textarea:hover { border-color: rgba(255,255,255,0.16); }
+        input:focus, textarea:focus {
+            border-color: var(--accent);
+            box-shadow:
+                0 0 0 3px rgba(0, 229, 255, 0.12),
+                0 0 24px rgba(0, 229, 255, 0.18),
+                0 4px 12px rgba(0,0,0,0.3) inset;
+        }
+        input::placeholder, textarea::placeholder { color: #3a4152; }
+
+        .btn {
+            position: relative;
+            width: 100%;
+            margin-top: 8px;
+            padding: 16px;
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.3);
+        }
+        .btn::before {
+            content: "";
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(100deg, transparent, rgba(255,255,255,0.35), transparent);
+            transition: left 0.6s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 16px 44px rgba(0, 229, 255, 0.45); }
+        .btn:hover::before { left: 100%; }
+        .btn:active { transform: translateY(0) scale(0.98); }
+        .btn:disabled {
+            background: #1c2130;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .progress-wrap {
+            margin-top: 28px;
+            display: none;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 24px;
+        }
+        .progress-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        .pct {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--accent);
+            text-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
+        }
+        .bar {
+            height: 12px;
+            background: rgba(8, 10, 16, 0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4) inset;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+            border-radius: 8px;
+            transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 0 16px rgba(0, 229, 255, 0.6);
+            position: relative;
+        }
+        .bar-fill::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.35), transparent 50%);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .stat {
+            background: linear-gradient(160deg, rgba(20, 24, 38, 0.8), rgba(10, 13, 22, 0.9));
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 18px 12px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+            transition: transform 0.25s;
+        }
+        .stat:hover { transform: translateY(-4px); }
+        .stat .num {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            display: block;
+        }
+        .stat .lbl {
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+        .ok { color: var(--ok); text-shadow: 0 0 16px rgba(74, 222, 128, 0.5); }
+        .warn { color: var(--warn); text-shadow: 0 0 16px rgba(255, 179, 92, 0.5); }
+        .bad { color: var(--bad); text-shadow: 0 0 16px rgba(255, 92, 92, 0.5); }
+
+        #statusText {
+            margin-top: 16px;
+            font-size: 13px;
+            text-align: center;
+            color: var(--muted);
+            letter-spacing: 0.5px;
+        }
+        #statusText.active { color: var(--accent); }
+
+        .footer-note {
+            text-align: center;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #3a4152;
+            margin-top: 24px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-orb o1"></div>
+    <div class="bg-orb o2"></div>
+    <div class="bg-orb o3"></div>
+
+    <div class="card" id="card">
+        <div class="brand">
+            <div class="logo">PROJ3CTX SPAM NGL</div>
+            <div class="tagline">Premium Anti-Ban Engine</div>
+        </div>
+
+        <div class="field">
+            <label><span class="dot"></span> Target URL</label>
+            <input type="text" id="url" placeholder="https://ngl.link/username" autocomplete="off">
+        </div>
+
+        <div class="field">
+            <label><span class="dot"></span> Message</label>
+            <textarea id="message" rows="3" placeholder="พิมพ์ข้อความตรงนี้..."></textarea>
+        </div>
+
+        <div class="field">
+            <label><span class="dot"></span> Count</label>
+            <input type="number" id="count" value="30" min="1" max="2000">
+        </div>
+
+        <div class="field">
+            <label><span class="dot"></span> Proxy List (Optional)</label>
+            <textarea id="proxies" rows="3" placeholder="http://host:port&#10;socks5://host:port"></textarea>
+        </div>
+
+        <button class="btn" id="startBtn" onclick="startJob()">Launch Attack</button>
+
+        <div class="progress-wrap" id="progressWrap">
+            <div class="progress-head">
+                <span>Progress</span>
+                <span class="pct" id="pctText">0%</span>
+            </div>
+            <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+            <div class="stats">
+                <div class="stat"><span class="num ok" id="sOk">0</span><span class="lbl">Success</span></div>
+                <div class="stat"><span class="num warn" id="sBlock">0</span><span class="lbl">Blocked</span></div>
+                <div class="stat"><span class="num bad" id="sFail">0</span><span class="lbl">Failed</span></div>
+            </div>
+            <div id="statusText">Idle</div>
+        </div>
+
+        <div class="footer-note">PROJ3CTX // NGL MODULE v2.0</div>
+    </div>
+
+    <script>
+        let timer = null;
+
+        function startJob() {
+            const url = document.getElementById('url').value.trim();
+            const message = document.getElementById('message').value.trim();
+            const count = parseInt(document.getElementById('count').value, 10);
+            const proxies = document.getElementById('proxies').value.trim();
+
+            if (!url || !message) { alert('กรอก URL กับข้อความให้ครบ'); return; }
+            if (isNaN(count) || count < 1 || count > 2000) { alert('จำนวนต้องอยู่ระหว่าง 1 - 2000'); return; }
+
+            const btn = document.getElementById('startBtn');
+            btn.disabled = true;
+            btn.textContent = 'Running...';
+            document.getElementById('progressWrap').style.display = 'block';
+            document.getElementById('statusText').textContent = 'Starting...';
+            document.getElementById('statusText').classList.add('active');
+
+            fetch('/api/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url, message, count, proxies })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) { alert(data.error); resetUI(); return; }
+                pollStatus(data.job_id);
+            })
+            .catch(e => { alert('เกิดข้อผิดพลาด: ' + e); resetUI(); });
+        }
+
+        function pollStatus(jobId) {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                fetch('/api/status/' + jobId)
+                .then(r => r.json())
+                .then(job => {
+                    const total = job.total || 0;
+                    const done = job.done || 0;
+                    const pct = total ? Math.round((done / total) * 100) : 0;
+
+                    document.getElementById('barFill').style.width = pct + '%';
+                    document.getElementById('pctText').textContent = pct + '%';
+                    document.getElementById('sOk').textContent = job.success || 0;
+                    document.getElementById('sBlock').textContent = job.blocked || 0;
+                    document.getElementById('sFail').textContent = job.failed || 0;
+
+                    if (job.status === 'finished') {
+                        document.getElementById('statusText').textContent = 'เสร็จสิ้น! สำเร็จ ' + (job.success || 0) + '/' + total;
+                        document.getElementById('statusText').classList.remove('active');
+                        clearInterval(timer);
+                        resetUI();
+                    } else if (job.status === 'error') {
+                        document.getElementById('statusText').textContent = 'ERROR: ' + (job.error || 'unknown');
+                        document.getElementById('statusText').classList.remove('active');
+                        clearInterval(timer);
+                        resetUI();
+                    } else {
+                        document.getElementById('statusText').textContent = 'กำลังยิง... ' + done + '/' + total + ' (' + pct + '%)';
+                    }
+                })
+                .catch(() => { /* ยังไม่สำคัญถ้า poll พลาดชั่วคราว */ });
+            }, 800);
+        }
+
+        function resetUI() {
+            const btn = document.getElementById('startBtn');
+            btn.disabled = false;
+            btn.textContent = 'Launch Attack';
+        }
+    </script>
+</body>
+</html>
